@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divya Puja Essentials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        puja: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c', // Saffron
+                            700: '#c2410c',
+                            800: '#9a3412', // Deep Red/Brown
+                            900: '#7c2d12',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['"Rozha One"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fff7ed;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fb923c' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            overflow-x: hidden;
+        }
+
+        .cart-open {
+            overflow: hidden;
+        }
+
+        /* Slide-in cart animation */
+        #cart-drawer {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #cart-drawer.open {
+            transform: translateX(0);
+        }
+
+        /* Overlay fade */
+        #cart-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #cart-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Toast animations */
+        .toast {
+            animation: slideUp 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 flex flex-col min-h-screen">
+
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-puja-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <i class="fa-solid fa-om text-3xl text-puja-600"></i>
+                    <h1 class="font-heading text-2xl md:text-3xl text-puja-800 tracking-wide mt-1">Divya Essentials</h1>
+                </div>
+
+                <!-- Nav & Cart -->
+                <div class="flex items-center gap-6">
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="#" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">Home</a>
+                        <a href="#shop" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">Shop</a>
+                        <a href="#about" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">About Us</a>
+                        <button onclick="toggleAdminModal()" class="text-gray-600 hover:text-puja-600 font-medium transition-colors"><i class="fa-solid fa-lock"></i> Admin</button>
+                    </nav>
+                    
+                    <button id="cart-btn" class="relative p-2 text-gray-600 hover:text-puja-600 transition-colors focus:outline-none" aria-label="Open Cart">
+                        <i class="fa-solid fa-cart-shopping text-xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 -mt-1 -mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-puja-600 text-[10px] font-bold text-white shadow-sm transition-transform scale-0">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-r from-puja-900 via-puja-700 to-puja-600 text-white overflow-hidden">
+            <!-- Decorative Mandalas / Background elements -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full border-[20px] border-white border-dashed animate-[spin_60s_linear_infinite]"></div>
+                <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full border-[20px] border-white border-dashed animate-[spin_40s_linear_infinite_reverse]"></div>
+            </div>
+
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col items-center text-center">
+                <span class="text-gold-400 font-semibold tracking-wider uppercase text-sm mb-4">✨ Illuminate Your Soul ✨</span>
+                <h2 class="font-heading text-4xl md:text-6xl text-white mb-6 leading-tight drop-shadow-md">
+                    Premium Puja Essentials <br class="hidden md:block"/> for Your Daily Rituals
+                </h2>
+                <p class="mt-4 max-w-2xl text-lg md:text-xl text-puja-100 mb-10 drop-shadow-sm">
+                    Bring home purity and peace with our handpicked collection of diyas, incense, and sacred items crafted for devotion.
+                </p>
+                <a href="#shop" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-puja-900 bg-gold-400 border border-transparent rounded-full shadow-lg hover:bg-gold-500 hover:scale-105 transition-all duration-300">
+                    Explore Collection <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            
+            <!-- Beautiful bottom wave -->
+            <div class="absolute bottom-0 w-full overflow-hidden leading-none">
+                <svg class="relative block w-full h-[40px] md:h-[60px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.2,201.2,109.89,242.4,104.42,284.1,88.4,321.39,56.44Z" fill="#fff7ed"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Shop Section -->
+        <section id="shop" class="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-3xl md:text-5xl text-puja-800 mb-4">Sacred Offerings</h2>
+                <div class="w-24 h-1 bg-puja-500 mx-auto rounded-full mb-4"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Discover our range of authentic and pure items to elevate your spiritual journey.</p>
+            </div>
+
+            <!-- Products Container -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Products will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="bg-puja-100 py-16 border-t border-puja-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1605808360022-7901370e4e20?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://placehold.co/800x600/ffedd5/9a3412?text=Puja+Culture'" alt="Puja culture" class="rounded-2xl shadow-xl w-full h-auto object-cover aspect-video border-4 border-white">
+                </div>
+                <div class="md:w-1/2">
+                    <h3 class="font-heading text-3xl text-puja-800 mb-6">Our Devotion to Purity</h3>
+                    <p class="text-gray-700 mb-4 leading-relaxed">
+                        At Divya Essentials, we believe that prayer is a profound connection between the soul and the divine. To honor this sacred bond, we source only the purest ingredients and most authentically crafted items.
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        From hand-rolled incense sticks made of natural herbs to unadulterated cow ghee and beautifully molded brassware, every item in our catalog is chosen to bring auspiciousness and peace to your home.
+                    </p>
+                    <ul class="space-y-3 text-puja-900 font-medium">
+                        <li><i class="fa-solid fa-check-circle text-puja-500 mr-2"></i> 100% Authentic & Pure</li>
+                        <li><i class="fa-solid fa-check-circle text-puja-500 mr-2"></i> Ethically Sourced</li>
+                        <li><i class="fa-solid fa-check-circle text-puja-500 mr-2"></i> Crafted by Traditional Artisans</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-puja-900 text-puja-100 py-12 border-t-4 border-gold-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-om text-2xl text-gold-400"></i>
+                    <h2 class="font-heading text-2xl text-white">Divya Essentials</h2>
+                </div>
+                <p class="text-puja-200 text-sm leading-relaxed">
+                    Illuminating homes and hearts with the finest puja samagri. Your trusted partner in daily devotion and festive celebrations.
+                </p>
+            </div>
+            <div>
+                <h3 class="font-bold text-white text-lg mb-4 uppercase tracking-wider">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-gold-400 transition-colors">Home</a></li>
+                    <li><a href="#shop" class="hover:text-gold-400 transition-colors">Shop All</a></li>
+                    <li><a href="#about" class="hover:text-gold-400 transition-colors">Our Story</a></li>
+                    <li><a href="#" class="hover:text-gold-400 transition-colors">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold text-white text-lg mb-4 uppercase tracking-wider">Contact</h3>
+                <ul class="space-y-2 text-sm text-puja-200">
+                    <li><i class="fa-solid fa-envelope mr-2"></i> namaste@divyaessentials.com</li>
+                    <li><i class="fa-solid fa-phone mr-2"></i> +91 98765 43210</li>
+                    <li class="mt-4 flex gap-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-whatsapp"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-puja-800 text-center text-sm text-puja-300">
+            &copy; 2026 Divya Essentials. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"></div>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white z-50 shadow-2xl flex flex-col border-l border-puja-200">
+        <!-- Cart Header -->
+        <div class="px-6 py-4 border-b border-puja-100 flex justify-between items-center bg-puja-50">
+            <h2 class="font-heading text-2xl text-puja-800 flex items-center gap-2">
+                <i class="fa-solid fa-basket-shopping text-puja-500"></i> Your Cart
+            </h2>
+            <button id="close-cart-btn" class="text-gray-400 hover:text-red-500 transition-colors p-2 focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items -->
+        <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+            <!-- Empty state (default) -->
+            <div id="empty-cart-msg" class="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
+                <i class="fa-solid fa-cart-arrow-down text-5xl text-puja-200"></i>
+                <p class="text-lg">Your sacred basket is empty.</p>
+                <button onclick="document.getElementById('close-cart-btn').click(); window.location.href='#shop'" class="text-puja-600 font-medium hover:underline">Continue Shopping</button>
+            </div>
+            
+            <!-- Items will be injected here -->
+            <ul id="cart-items-list" class="space-y-4 hidden"></ul>
+        </div>
+
+        <!-- Cart Footer -->
+        <div class="border-t border-puja-100 p-6 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between items-center mb-4 text-lg font-medium text-gray-800">
+                <span>Subtotal</span>
+                <span id="cart-total" class="font-bold text-puja-700">₹0.00</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4 text-center">Taxes and shipping calculated at checkout</p>
+            <button id="checkout-btn" class="w-full bg-puja-600 hover:bg-puja-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                Proceed to Checkout <i class="fa-solid fa-lock text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2"></div>
+
+    <!-- Checkout Modal (replaces alert) -->
+    <div id="checkout-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-bg"></div>
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 relative z-10 text-center transform transition-all scale-95 opacity-0 duration-300" id="checkout-modal-content">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="font-heading text-2xl text-puja-800 mb-2">Order Placed!</h3>
+            <p class="text-gray-600 mb-6">May the divine blessings be with you. Your puja essentials will arrive soon.</p>
+            <button id="close-checkout-modal" class="w-full bg-puja-600 hover:bg-puja-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                Back to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Details Page (Full Screen Modal) -->
+    <div id="product-details-page" class="fixed inset-0 z-[45] hidden bg-white overflow-y-auto transform transition-transform duration-300 translate-y-full">
+        <!-- Header -->
+        <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-puja-200 px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center z-10">
+            <button onclick="closeProductDetails()" class="text-gray-600 hover:text-puja-600 font-medium flex items-center gap-2 transition-colors focus:outline-none">
+                <i class="fa-solid fa-arrow-left"></i> Back to Shop
+            </button>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleCart()" class="relative p-2 text-gray-600 hover:text-puja-600 transition-colors focus:outline-none">
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                    <span id="detail-cart-count" class="absolute top-0 right-0 -mt-1 -mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-puja-600 text-[10px] font-bold text-white shadow-sm transition-transform scale-0">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Dynamic Content Container -->
+        <div id="product-details-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
+            <!-- Content will be injected here via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-bg" onclick="toggleAdminModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative z-10">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-heading text-2xl text-puja-800">Add New Product</h3>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-red-500 transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="admin-add-product-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                        <input type="text" id="admin-name" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" id="admin-price" required min="0" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="admin-desc" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Badge (Optional, e.g., Bestseller)</label>
+                    <input type="text" id="admin-badge" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Image URLs (Provide up to 5)</label>
+                    <input type="url" id="admin-img-1" required placeholder="Main Image URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-2" placeholder="Image 2 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-3" placeholder="Image 3 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-4" placeholder="Image 4 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-5" placeholder="Image 5 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="toggleAdminModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" id="admin-submit-btn" class="px-6 py-2 bg-puja-600 text-white rounded-lg hover:bg-puja-700 transition-colors shadow-md">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- IMPORTANT: Must use CDN links for HTML files, NOT the standard node_modules imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your exact configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB73_EG0YVkedTOmsJT1y9dzg42Mwydit0",
+            authDomain: "puja-4884a.firebaseapp.com",
+            projectId: "puja-4884a",
+            storageBucket: "puja-4884a.firebasestorage.app",
+            messagingSenderId: "1052643601610",
+            appId: "1:1052643601610:web:940c67c6324293ec0b5833",
+            measurementId: "G-CELXSSH8J7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- State Management ---
+        let products = [];
+        let cart = [];
+
+        // Expose functions to window for HTML inline handlers
+        window.addToCart = addToCart;
+        window.updateQuantity = updateQuantity;
+        window.removeFromCart = removeFromCart;
+        window.openProductDetails = openProductDetails;
+        window.closeProductDetails = closeProductDetails;
+        window.toggleCart = toggleCart;
+        window.toggleAdminModal = toggleAdminModal;
+
+        async function initApp() {
+            try {
+                // Fetching from a simple 'products' collection in your database
+                const productsRef = collection(db, 'products');
+                
+                // Listen to real-time updates directly
+                onSnapshot(productsRef, (snapshot) => {
+                    products = [];
+                    snapshot.forEach(doc => {
+                        products.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    if (products.length === 0) {
+                        seedInitialProducts(); // Adds a dummy product if db is totally empty
+                    } else {
+                        renderProducts();
+                    }
+                }, (error) => {
+                    console.error("Error fetching products: Make sure your Firestore Database is created and in Test Mode.", error);
+                    showToast("Failed to load products. Check console for details.");
+                });
+            } catch (err) {
+                console.error("Database connection error", err);
+            }
+        }
+
+        async function seedInitialProducts() {
+            const productsRef = collection(db, 'products');
+            
+            const seedProduct = {
+                name: "Handcrafted Brass Diya",
+                price: 450,
+                rating: 4.8,
+                reviews: 124,
+                image: "https://images.unsplash.com/photo-1605808360022-7901370e4e20?auto=format&fit=crop&w=400&q=80",
+                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Brass+Diya",
+                badge: "Bestseller",
+                description: "Illuminate your sacred space with this intricately designed handcrafted brass diya. A perfect symbol of purity and devotion, heavy-weight and durable for daily prayers and Diwali celebrations.",
+                gallery: [
+                    "https://images.unsplash.com/photo-1605808360022-7901370e4e20?auto=format&fit=crop&w=800&q=80",
+                    "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Top+View",
+                    "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Side+Profile",
+                    "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Lit",
+                    "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Base"
+                ]
+            };
+            try {
+                await addDoc(productsRef, seedProduct);
+            } catch (e) {
+                console.error("Error seeding initial product. Check Firestore rules.", e);
+            }
+        }
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // --- DOM Elements ---
+        const productsGrid = document.getElementById('products-grid');
+        const cartBtn = document.getElementById('cart-btn');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartCount = document.getElementById('cart-count');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const emptyCartMsg = document.getElementById('empty-cart-msg');
+        const cartTotalDisplay = document.getElementById('cart-total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const toastContainer = document.getElementById('toast-container');
+        
+        // Checkout Modal elements
+        const checkoutModal = document.getElementById('checkout-modal');
+        const checkoutModalContent = document.getElementById('checkout-modal-content');
+        const closeCheckoutModalBtn = document.getElementById('close-checkout-modal');
+
+        function renderProducts() {
+            productsGrid.innerHTML = '';
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = "product-card bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-puja-100 flex flex-col group relative";
+                
+                // Stars rating HTML
+                const stars = Array.from({length: 5}, (_, i) => {
+                    if (i < Math.floor(product.rating)) return `<i class="fa-solid fa-star text-gold-400 text-xs"></i>`;
+                    if (i < product.rating) return `<i class="fa-solid fa-star-half-stroke text-gold-400 text-xs"></i>`;
+                    return `<i class="fa-regular fa-star text-gray-300 text-xs"></i>`;
+                }).join('');
+
+                const badgeHtml = product.badge ? `<div class="absolute top-3 left-3 bg-puja-600 text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10">${product.badge}</div>` : '';
+
+                card.innerHTML = `
+                    ${badgeHtml}
+                    <div class="relative h-56 overflow-hidden bg-puja-50 cursor-pointer" onclick="openProductDetails('${product.id}')">
+                        <img src="${product.image}" onerror="this.src='${product.fallback}'" alt="${product.name}" class="product-img w-full h-full object-cover transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="bg-white/95 text-puja-800 font-medium px-5 py-2 rounded-full shadow-lg backdrop-blur-sm text-sm border border-puja-100">View Details</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <div class="flex items-center gap-1 mb-2">
+                            ${stars}
+                            <span class="text-xs text-gray-500 ml-1">(${product.reviews})</span>
+                        </div>
+                        <h3 class="font-heading text-lg text-gray-800 leading-tight mb-2 cursor-pointer hover:text-puja-600 transition-colors" onclick="openProductDetails('${product.id}')">${product.name}</h3>
+                        <div class="mt-auto pt-4 flex items-center justify-between">
+                            <span class="font-bold text-puja-800 text-xl">₹${product.price}</span>
+                            <button onclick="addToCart('${product.id}')" class="w-10 h-10 rounded-full bg-puja-100 text-puja-600 hover:bg-puja-600 hover:text-white flex items-center justify-center transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-puja-500 focus:ring-offset-2" aria-label="Add to cart">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productsGrid.appendChild(card);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added ${product.name} to cart`);
+        }
+
+        function updateQuantity(productId, change) {
+            const itemIndex = cart.findIndex(item => item.id === productId);
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += change;
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            // Update badge
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            if (totalItems > 0) {
+                cartCount.classList.remove('scale-0');
+                cartCount.classList.add('scale-100');
+            } else {
+                cartCount.classList.remove('scale-100');
+                cartCount.classList.add('scale-0');
+            }
+
+            // Update List
+            cartItemsList.innerHTML = '';
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                emptyCartMsg.classList.remove('hidden');
+                cartItemsList.classList.add('hidden');
+                checkoutBtn.disabled = true;
+            } else {
+                emptyCartMsg.classList.add('hidden');
+                cartItemsList.classList.remove('hidden');
+                checkoutBtn.disabled = false;
+
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    totalPrice += itemTotal;
+
+                    const li = document.createElement('li');
+                    li.className = "flex py-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm relative";
+                    li.innerHTML = `
+                        <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                            <img src="${item.image}" onerror="this.src='${item.fallback}'" alt="${item.name}" class="h-full w-full object-cover object-center">
+                        </div>
+                        <div class="ml-4 flex flex-1 flex-col">
+                            <div>
+                                <div class="flex justify-between text-sm font-medium text-gray-900">
+                                    <h4 class="line-clamp-2 max-w-[150px] leading-tight font-heading">${item.name}</h4>
+                                    <p class="ml-4 text-puja-700 font-bold">₹${itemTotal}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-1 items-end justify-between text-sm mt-2">
+                                <div class="flex items-center border border-gray-200 rounded-lg">
+                                    <button onclick="updateQuantity('${item.id}', -1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-l-lg transition-colors"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                    <span class="px-2 text-gray-700 font-medium">${item.quantity}</span>
+                                    <button onclick="updateQuantity('${item.id}', 1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-r-lg transition-colors"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                </div>
+                                <button type="button" onclick="removeFromCart('${item.id}')" class="font-medium text-red-500 hover:text-red-700 transition-colors">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(li);
+                });
+            }
+
+            // Update Total
+            cartTotalDisplay.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
+            
+            // Sync details page cart icon if it exists
+            const detailCartCount = document.getElementById('detail-cart-count');
+            if(detailCartCount) {
+                detailCartCount.textContent = totalItems;
+                if (totalItems > 0) {
+                    detailCartCount.classList.remove('scale-0');
+                    detailCartCount.classList.add('scale-100');
+                } else {
+                    detailCartCount.classList.remove('scale-100');
+                    detailCartCount.classList.add('scale-0');
+                }
+            }
+        }
+
+        function openProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('product-details-page');
+            const content = document.getElementById('product-details-content');
+
+            // Generate Thumbnails HTML (5 images)
+            const thumbnailsHtml = product.gallery.map((imgUrl, idx) => `
+                <button onclick="document.getElementById('main-detail-img').src='${imgUrl}'" 
+                        class="border-2 border-transparent focus:border-puja-500 hover:border-puja-400 rounded-xl overflow-hidden h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 transition-colors shadow-sm focus:outline-none">
+                    <img src="${imgUrl}" class="w-full h-full object-cover" alt="${product.name} View ${idx + 1}">
+                </button>
+            `).join('');
+
+            // Generate Stars
+            const stars = Array.from({length: 5}, (_, i) => {
+                if (i < Math.floor(product.rating)) return `<i class="fa-solid fa-star text-gold-400"></i>`;
+                if (i < product.rating) return `<i class="fa-solid fa-star-half-stroke text-gold-400"></i>`;
+                return `<i class="fa-regular fa-star text-gray-300"></i>`;
+            }).join('');
+
+            // Inject Content
+            content.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-10 lg:gap-16">
+                    <!-- Image Gallery Left -->
+                    <div class="lg:w-1/2 flex flex-col gap-4">
+                        <div class="w-full aspect-square bg-puja-50 rounded-3xl overflow-hidden shadow-md border border-puja-100">
+                            <img id="main-detail-img" src="${product.gallery[0]}" class="w-full h-full object-cover transition-all duration-300" alt="${product.name}">
+                        </div>
+                        <div class="flex gap-4 overflow-x-auto py-2 hide-scrollbar">
+                            ${thumbnailsHtml}
+                        </div>
+                    </div>
+                    
+                    <!-- Details Right -->
+                    <div class="lg:w-1/2 flex flex-col justify-center">
+                        ${product.badge ? `<span class="bg-puja-100 text-puja-800 text-xs font-bold px-3 py-1 rounded-full w-max mb-4 uppercase tracking-wider">${product.badge}</span>` : ''}
+                        
+                        <h2 class="font-heading text-4xl sm:text-5xl text-gray-900 mb-4 leading-tight">${product.name}</h2>
+                        
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-3xl font-bold text-puja-700">₹${product.price}</span>
+                            <div class="h-6 w-px bg-gray-300"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-sm">${stars}</div>
+                                <span class="text-gray-500 font-medium">(${product.reviews} reviews)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="prose prose-puja mb-8">
+                            <p class="text-gray-600 text-lg leading-relaxed">${product.description}</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-sm text-gray-600 font-medium">
+                                <i class="fa-solid fa-truck-fast text-puja-500"></i> Free Delivery within 3-5 business days
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-gray-600 font-medium">
+                                <i class="fa-solid fa-leaf text-green-600"></i> 100% Authentic & Pure Quality
+                            </div>
+                        </div>
+
+                        <div class="mt-10 pt-8 border-t border-puja-100 flex flex-col sm:flex-row gap-4">
+                            <button onclick="addToCart('${product.id}')" class="flex-1 bg-puja-600 hover:bg-puja-700 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 text-lg">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button onclick="addToCart('${product.id}'); toggleCart();" class="flex-1 bg-white hover:bg-puja-50 text-puja-700 border-2 border-puja-600 font-bold py-4 px-8 rounded-full shadow-sm transition-all duration-300 flex items-center justify-center gap-3 text-lg">
+                                Buy it Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Open Modal with animation
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('translate-y-full');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            window.scrollTo(0, 0); // Scroll to top for details
+        }
+
+        function closeProductDetails() {
+            const modal = document.getElementById('product-details-page');
+            modal.classList.add('translate-y-full');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function toggleCart() {
+            const isOpen = cartDrawer.classList.contains('open');
+            if (isOpen) {
+                cartDrawer.classList.remove('open');
+                cartOverlay.classList.remove('open');
+                document.body.classList.remove('cart-open');
+            } else {
+                cartDrawer.classList.add('open');
+                cartOverlay.classList.add('open');
+                document.body.classList.add('cart-open');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "toast bg-puja-800 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3 font-medium text-sm border border-puja-600";
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-check text-gold-400"></i>
+                <span>${message}</span>
+            `;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function handleCheckout() {
+            if (cart.length === 0) return;
+            
+            toggleCart();
+            
+            checkoutModal.classList.remove('hidden');
+            setTimeout(() => {
+                checkoutModalContent.classList.remove('scale-95', 'opacity-0');
+                checkoutModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            cart = [];
+            updateCartUI();
+        }
+
+        function closeCheckoutModal() {
+            checkoutModalContent.classList.remove('scale-100', 'opacity-100');
+            checkoutModalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                checkoutModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- Event Listeners ---
+        cartBtn.addEventListener('click', toggleCart);
+        closeCartBtn.addEventListener('click', toggleCart);
+        cartOverlay.addEventListener('click', toggleCart);
+        checkoutBtn.addEventListener('click', handleCheckout);
+        closeCheckoutModalBtn.addEventListener('click', closeCheckoutModal);
+        checkoutModal.querySelector('.modal-bg').addEventListener('click', closeCheckoutModal);
+
+        const adminForm = document.getElementById('admin-add-product-form');
+        if (adminForm) {
+            adminForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('admin-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+                const newProduct = {
+                    name: document.getElementById('admin-name').value,
+                    price: parseFloat(document.getElementById('admin-price').value),
+                    description: document.getElementById('admin-desc').value,
+                    badge: document.getElementById('admin-badge').value || null,
+                    rating: 5.0,
+                    reviews: 0,
+                    image: document.getElementById('admin-img-1').value,
+                    fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Product",
+                    gallery: [
+                        document.getElementById('admin-img-1').value,
+                        document.getElementById('admin-img-2').value || null,
+                        document.getElementById('admin-img-3').value || null,
+                        document.getElementById('admin-img-4').value || null,
+                        document.getElementById('admin-img-5').value || null
+                    ].filter(Boolean)
+                };
+
+                try {
+                    // Saves directly to your 'products' collection
+                    const productsRef = collection(db, 'products');
+                    await addDoc(productsRef, newProduct);
+                    showToast("Product added successfully!");
+                    adminForm.reset();
+                    toggleAdminModal();
+                } catch (error) {
+                    console.error("Error adding product. Check Firestore Rules.", error);
+                    showToast("Error adding product. Please make sure Firestore is in Test Mode.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Save Product';
+                }
+            });
+        }
+
+        // Initialize App
+        initApp();
+        updateCartUI();
+
+    </script>
+</body>
+</html>
