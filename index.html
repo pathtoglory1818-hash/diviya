@@ -167,10 +167,6 @@
                 display: flex !important;
             }
 
-            #close-chat {
-                display: none !important;
-            }
-
             .overlay:not(#chat-screen) {
                 position: absolute;
                 top: 50%;
@@ -1033,14 +1029,14 @@
 
     <!-- Splash Screen -->
     <div id="splash-screen" class="overlay flex-col active" style="z-index: 1000; background: radial-gradient(circle at top right, #064e3b 0%, transparent 40%), radial-gradient(circle at bottom left, #022c22 0%, transparent 40%), #030712; justify-content: center; align-items: center;">
-        <dotlottie-wc src="https://lottie.host/24935d1b-e76d-4608-b980-daf0f39c7d77/Tb4j8G3pxT.lottie" style="width: 200px; height: 200px;" autoplay loop></dotlottie-wc>
+        <dotlottie-wc src="https://lottie.host/a708d6fe-f382-4a50-abb9-4457c6d6e6e7/daCMcsCXdH.lottie" style="width: 200px; height: 200px;" autoplay loop></dotlottie-wc>
         <h1 style="font-size: 2.8rem; color: var(--primary-color); margin-top: -20px; letter-spacing: -1px; font-weight: 700;">TAN Chats</h1>
     </div>
 
     <!-- Login Screen -->
     <div id="login-screen" class="overlay flex-col" style="background: radial-gradient(circle at top right, #064e3b 0%, transparent 40%), radial-gradient(circle at bottom left, #022c22 0%, transparent 40%), #030712;">
         <div style="text-align: center; margin-bottom: 30px;">
-            <dotlottie-wc src="https://lottie.host/24935d1b-e76d-4608-b980-daf0f39c7d77/Tb4j8G3pxT.lottie" style="width: 250px; height: 250px; margin: 0 auto; margin-top: -30px;" autoplay loop></dotlottie-wc>
+            <dotlottie-wc src="https://lottie.host/a708d6fe-f382-4a50-abb9-4457c6d6e6e7/daCMcsCXdH.lottie" style="width: 250px; height: 250px; margin: 0 auto; margin-top: -30px;" autoplay loop></dotlottie-wc>
             <h1 style="font-size: 2.8rem; color: var(--primary-color); margin-top: -10px; letter-spacing: -1px; font-weight: 700;">TAN Chats</h1>
             <p style="color: var(--text-muted); font-size: 1.1rem;">Connect with friends instantly.</p>
         </div>
@@ -1228,21 +1224,39 @@
         </div>
     </div>
 
+    <!-- Rename Contact Modal -->
+    <div id="rename-contact-modal" class="overlay" style="justify-content: center; align-items: center; background: rgba(0,0,0,0.85); z-index: 260;">
+        <div style="background: var(--container-solid); border-radius: 24px; padding: 20px; width: 90%; max-width: 380px; display: flex; flex-direction: column; gap: 14px; border: var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+            <div class="flex justify-between items-center">
+                <h3 style="font-size: 1.05rem; font-weight: 600;">Rename Friend</h3>
+                <button id="btn-cancel-rename" style="padding: 4px;"><i data-lucide="x" style="width: 22px; height: 22px;"></i></button>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Set a custom nickname for this friend. Leave blank to use their default profile name.</p>
+            <input type="text" id="rename-contact-input" placeholder="Enter custom name..." maxlength="25" style="margin-bottom: 0;">
+            <button class="btn-primary" id="btn-save-rename" style="margin-top: 0;">Save Name</button>
+        </div>
+    </div>
+
     <!-- Chat Screen Overlay -->
     <div id="chat-screen" class="overlay">
         
         <!-- Desktop Default Chat Placeholder -->
         <div class="desktop-chat-placeholder hidden flex-col items-center justify-center" style="flex: 1; text-align: center; color: var(--text-muted); padding: 40px; height: 100%;">
-            <dotlottie-wc src="https://lottie.host/24935d1b-e76d-4608-b980-daf0f39c7d77/Tb4j8G3pxT.lottie" style="width: 200px; height: 200px;" autoplay loop></dotlottie-wc>
+            <dotlottie-wc src="https://lottie.host/a708d6fe-f382-4a50-abb9-4457c6d6e6e7/daCMcsCXdH.lottie" style="width: 200px; height: 200px;" autoplay loop></dotlottie-wc>
             <h2 style="font-size: 1.8rem; color: var(--text-color); margin-top: 10px; font-weight: 600;">TAN Chats</h2>
             <p style="font-size: 0.95rem; margin-top: 8px; max-width: 320px; line-height: 1.5; opacity: 0.8;">Select a contact or group from the left sidebar to start messaging, or tap the search icon to add a friend.</p>
         </div>
 
         <div class="chat-header">
-            <button id="close-chat"><i data-lucide="arrow-left"></i></button>
+            <button id="close-chat" class="header-icon-btn" title="Back" style="width: 36px; height: 36px;"><i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i></button>
             <img src="" id="chat-user-pic" class="profile-pic" style="width: 36px; height: 36px;">
             <div class="flex-col">
-                <span id="chat-user-name" style="font-weight: 500;">Name</span>
+                <div class="flex items-center gap-2">
+                    <span id="chat-user-name" style="font-weight: 500;">Name</span>
+                    <button id="btn-edit-contact-name" class="hidden" title="Rename Friend" style="opacity: 0.7; padding: 2px; display: flex; align-items: center;">
+                        <i data-lucide="edit-2" style="width: 14px; height: 14px; color: var(--primary-color);"></i>
+                    </button>
+                </div>
                 <span id="chat-typing" class="typing-indicator hidden">typing...</span>
             </div>
             <div class="chat-actions" style="position: relative; align-items: center;">
@@ -1252,7 +1266,7 @@
                 <button id="btn-chat-options"><i data-lucide="more-vertical" style="color: var(--text-color);"></i></button>
                 
                 <!-- 3-Dot Dropdown Menu -->
-                <div id="chat-options-menu" class="hidden" style="position: absolute; top: 100%; right: 0; margin-top: 10px; background: var(--container-solid); border: var(--glass-border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 200; overflow: hidden; min-width: 180px;">
+                <div id="chat-options-menu" class="hidden" style="position: absolute; top: 100%; right: 0; margin-top: 10px; background: var(--container-solid); border: var(--glass-border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 200; overflow: hidden; min-width: 190px;">
                     <div style="padding: 12px 16px; border-bottom: var(--glass-border);">
                         <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;">Chat Background</div>
                         <div class="flex justify-between items-center" id="bg-options-container">
@@ -1263,6 +1277,10 @@
                             <button class="bg-option" data-color="#04121d" style="width: 22px; height: 22px; border-radius: 50%; background: #04121d; border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(255,255,255,0.2);"></button>
                         </div>
                     </div>
+                    <button id="btn-rename-friend-menu" class="selectable-item" style="width: 100%; border-bottom: var(--glass-border); justify-content: flex-start; padding: 12px 16px;">
+                        <i data-lucide="user-pen" style="color: var(--text-color); margin-right: 12px; width: 18px; height: 18px;"></i>
+                        <span style="color: var(--text-color); font-weight: 500; font-size: 0.95rem;">Rename friend</span>
+                    </button>
                     <button id="btn-clear-chat-me" class="selectable-item" style="width: 100%; border-bottom: var(--glass-border); justify-content: flex-start; padding: 12px 16px;">
                         <i data-lucide="eraser" style="color: var(--text-color); margin-right: 12px; width: 18px; height: 18px;"></i>
                         <span style="color: var(--text-color); font-weight: 500; font-size: 0.95rem;">Clear for me</span>
@@ -1757,6 +1775,14 @@
         return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
     }
 
+    function getDisplayName(uid) {
+        if (!uid) return 'Unknown';
+        if (currentUser && uid === currentUser.uid) return myProfile?.name || 'You';
+        const custom = contactsData[uid]?.customName;
+        if (custom && custom.trim()) return custom.trim();
+        return usersData[uid]?.name || 'Unknown';
+    }
+
     function escapeHTML(str) {
         if (!str) return '';
         return String(str).replace(/[&<>'"]/g, tag => ({
@@ -1787,6 +1813,7 @@
             'side-menu', 
             'edit-profile-modal', 
             'edit-group-modal',
+            'rename-contact-modal',
             'msg-options-modal',
             'media-preview-modal',
             'code-snippet-modal',
@@ -2533,6 +2560,9 @@
         unsubContacts = onSnapshot(privCol('contacts'), (snap) => {
             snap.docs.forEach(d => { contactsData[d.id] = d.data(); });
             renderContacts();
+            if (activePeerId && !activeIsGroup) {
+                document.getElementById('chat-user-name').innerText = getDisplayName(activePeerId);
+            }
         }, (err) => console.error("Contacts connection error", err));
 
         unsubGroups = onSnapshot(pubCol('groups'), (snap) => {
@@ -2587,7 +2617,9 @@
         unsubCalls = onSnapshot(pubCol('calls'), (snap) => {
             snap.docs.forEach(d => {
                 const data = d.data();
-                if (data.calleeId === currentUser.uid && data.status === 'ringing' && (Date.now() - data.timestamp < 45000)) {
+                const isDirectTarget = data.calleeId === currentUser.uid;
+                const isGroupTarget = data.isGroup && Array.isArray(data.calleeIds) && data.calleeIds.includes(currentUser.uid) && data.callerId !== currentUser.uid;
+                if ((isDirectTarget || isGroupTarget) && data.status === 'ringing' && (Date.now() - data.timestamp < 45000)) {
                     if (!currentCallId) {
                         showIncomingCall(d.id, data);
                     }
@@ -2651,10 +2683,23 @@
     }
 
     async function startCall(isVideo = false) {
-        if (!currentUser || !activePeerId || activeIsGroup) {
-            return showToast("Calls are available in 1-on-1 chats.");
+        if (!currentUser || (!activePeerId && !activeIsGroup)) {
+            return showToast("Select a chat to start a call.");
         }
         if (currentCallId) return showToast("Already in a call.");
+
+        let callTargetEntity = null;
+        let calleeIdsList = [];
+        if (activeIsGroup) {
+            const grp = groupsData[activeChatId];
+            if (!grp) return showToast("Group not found.");
+            calleeIdsList = (grp.members || []).filter(uid => uid !== currentUser.uid);
+            if (calleeIdsList.length === 0) return showToast("No other members in this group.");
+            callTargetEntity = { name: grp.name, dpUrl: grp.dpUrl || emojiToSVG('👥') };
+        } else {
+            const peer = usersData[activePeerId] || { name: 'Friend', dpUrl: emojiToSVG('👤') };
+            callTargetEntity = { name: getDisplayName(activePeerId), dpUrl: peer.dpUrl };
+        }
 
         try {
             localStream = await navigator.mediaDevices.getUserMedia({
@@ -2666,8 +2711,7 @@
             return showToast(isVideo ? "Camera & Microphone access required." : "Microphone access required.");
         }
 
-        const peer = usersData[activePeerId] || { name: 'Friend', dpUrl: emojiToSVG('👤') };
-        setupCallUI(peer, isVideo, "Calling...");
+        setupCallUI(callTargetEntity, isVideo, activeIsGroup ? "Calling Group..." : "Calling...");
 
         peerConnection = new RTCPeerConnection(rtcConfig);
         remoteStream = new MediaStream();
@@ -2702,9 +2746,12 @@
 
             await setDoc(callDocRef, {
                 callerId: currentUser.uid,
-                callerName: myProfile?.name || 'User',
-                callerPic: myProfile?.dpUrl || emojiToSVG('👤'),
-                calleeId: activePeerId,
+                callerName: activeIsGroup ? `${callTargetEntity.name} (${myProfile?.name || 'Member'})` : (myProfile?.name || 'User'),
+                callerPic: activeIsGroup ? callTargetEntity.dpUrl : (myProfile?.dpUrl || emojiToSVG('👤')),
+                calleeId: activeIsGroup ? null : activePeerId,
+                calleeIds: activeIsGroup ? calleeIdsList : [activePeerId],
+                isGroup: activeIsGroup,
+                groupId: activeIsGroup ? activeChatId : null,
                 type: isVideo ? 'video' : 'audio',
                 status: 'ringing',
                 offer: { type: offer.type, sdp: offer.sdp },
@@ -2745,16 +2792,22 @@
         currentCallId = callId;
         currentCallData = callData;
 
+        const callerDisplayName = callData.isGroup
+            ? (callData.callerName || 'Group Call')
+            : getDisplayName(callData.callerId) || callData.callerName || 'Unknown';
+
         document.getElementById('incoming-call-pic').src = callData.callerPic || emojiToSVG('👤');
-        document.getElementById('incoming-call-name').innerText = callData.callerName || 'Unknown';
-        document.getElementById('incoming-call-type').innerText = callData.type === 'video' ? 'Incoming Video Call...' : 'Incoming Voice Call...';
+        document.getElementById('incoming-call-name').innerText = callerDisplayName;
+        document.getElementById('incoming-call-type').innerText = callData.type === 'video'
+            ? (callData.isGroup ? 'Incoming Group Video Call...' : 'Incoming Video Call...')
+            : (callData.isGroup ? 'Incoming Group Voice Call...' : 'Incoming Voice Call...');
         document.getElementById('incoming-call-modal').classList.add('active');
         startRingtone();
 
         if (unsubCallDoc) unsubCallDoc();
         unsubCallDoc = onSnapshot(doc(pubCol('calls'), callId), (snap) => {
             const data = snap.data();
-            if (!data || data.status === 'ended' || data.status === 'declined') {
+            if (!data || data.status === 'ended' || data.status === 'declined' || (data.status === 'accepted' && data.answeredBy && data.answeredBy !== currentUser.uid)) {
                 cleanupCall();
             }
         });
@@ -2778,8 +2831,12 @@
             return;
         }
 
+        const callerTitle = currentCallData.isGroup
+            ? (currentCallData.callerName || 'Group Call')
+            : getDisplayName(currentCallData.callerId) || currentCallData.callerName || 'Caller';
+
         setupCallUI({
-            name: currentCallData.callerName || 'Caller',
+            name: callerTitle,
             dpUrl: currentCallData.callerPic || emojiToSVG('👤')
         }, isVideo, "Connecting...");
 
@@ -2814,6 +2871,7 @@
 
             await updateDoc(doc(pubCol('calls'), currentCallId), {
                 answer: { type: answer.type, sdp: answer.sdp },
+                answeredBy: currentUser.uid,
                 status: 'accepted'
             });
 
@@ -3043,7 +3101,7 @@
             div.className = 'selectable-item';
             div.innerHTML = `
                 <img src="${peer.dpUrl}" class="profile-pic" style="margin-right: 12px; width: 36px; height: 36px;">
-                <span>${escapeHTML(peer.name)}</span>
+                <span>${escapeHTML(getDisplayName(uid))}</span>
                 <div class="checkbox"></div>
             `;
             div.onclick = () => {
@@ -3113,7 +3171,7 @@
             div.className = 'selectable-item';
             div.innerHTML = `
                 <img src="${peer.dpUrl}" class="profile-pic" style="margin-right: 12px; width: 36px; height: 36px;">
-                <span>${escapeHTML(peer.name)}</span>
+                <span>${escapeHTML(getDisplayName(uid))}</span>
                 <div class="checkbox"></div>
             `;
             div.onclick = () => {
@@ -3188,6 +3246,7 @@
             count++;
             const peer = usersData[uid] || { name: 'Unknown', dpUrl: emojiToSVG('?') };
             const contactInfo = contactsData[uid];
+            const displayName = getDisplayName(uid);
             
             const div = document.createElement('div');
             div.className = 'list-item';
@@ -3195,7 +3254,7 @@
             div.innerHTML = `
                 <img src="${peer.dpUrl}" class="profile-pic">
                 <div class="info">
-                    <div class="name">${escapeHTML(peer.name)}</div>
+                    <div class="name">${escapeHTML(displayName)}</div>
                     <div class="sub">Tap to chat</div>
                 </div>
                 ${contactInfo.unread > 0 ? `<div class="unread-badge">${contactInfo.unread}</div>` : ''}
@@ -3235,17 +3294,21 @@
         if (isGroup) {
             activeChatId = id;
             document.getElementById('btn-group-info').classList.remove('hidden');
-            document.getElementById('btn-audio-call').classList.add('hidden');
-            document.getElementById('btn-video-call').classList.add('hidden');
+            document.getElementById('btn-edit-contact-name').classList.add('hidden');
+            document.getElementById('btn-rename-friend-menu').classList.add('hidden');
+            document.getElementById('btn-audio-call').classList.remove('hidden');
+            document.getElementById('btn-video-call').classList.remove('hidden');
         } else {
             activeChatId = getChatId(currentUser.uid, id);
             document.getElementById('btn-group-info').classList.add('hidden');
+            document.getElementById('btn-edit-contact-name').classList.remove('hidden');
+            document.getElementById('btn-rename-friend-menu').classList.remove('hidden');
             document.getElementById('btn-audio-call').classList.remove('hidden');
             document.getElementById('btn-video-call').classList.remove('hidden');
             updateDoc(doc(privCol('contacts'), id), { unread: 0 }).catch(() => {});
         }
 
-        document.getElementById('chat-user-name').innerText = entity.name;
+        document.getElementById('chat-user-name').innerText = isGroup ? entity.name : getDisplayName(id);
         document.getElementById('chat-user-pic').src = entity.dpUrl;
         
         // Close any open image showcase or chat modals when switching chats
@@ -3286,8 +3349,7 @@
 
                 let senderHtml = '';
                 if (isGroup && !isMe) {
-                    const sender = usersData[msg.senderId] || { name: 'Unknown' };
-                    senderHtml = `<span class="msg-sender-name">${escapeHTML(sender.name)}</span>`;
+                    senderHtml = `<span class="msg-sender-name">${escapeHTML(getDisplayName(msg.senderId))}</span>`;
                 }
 
                 const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -3389,7 +3451,7 @@
                     const startX = parseFloat(div.dataset.startX);
                     
                     if (e.changedTouches[0].screenX - startX > 40) {
-                        const senderName = isMe ? (myProfile ? myProfile.name : 'You') : (usersData[msg.senderId]?.name || 'Unknown');
+                        const senderName = isMe ? (myProfile ? myProfile.name : 'You') : getDisplayName(msg.senderId);
                         const previewStr = msg.text || (msg.mediaType === 'audio' ? '🎙️ Voice Message' : 'Media');
                         setReplyTo(msg.id, previewStr, senderName);
                         if (navigator.vibrate) navigator.vibrate(50);
@@ -3402,7 +3464,7 @@
                 });
 
                 div.ondblclick = () => {
-                    const senderName = isMe ? (myProfile ? myProfile.name : 'You') : (usersData[msg.senderId]?.name || 'Unknown');
+                    const senderName = isMe ? (myProfile ? myProfile.name : 'You') : getDisplayName(msg.senderId);
                     const previewStr = msg.text || (msg.mediaType === 'audio' ? '🎙️ Voice Message' : 'Media');
                     setReplyTo(msg.id, previewStr, senderName);
                 };
@@ -3436,7 +3498,7 @@
             snap.docs.forEach(d => {
                 const data = d.data();
                 if (data.uid !== currentUser.uid && (now - data.time < 3000)) {
-                    typingNames.push(usersData[data.uid]?.name || 'Someone');
+                    typingNames.push(getDisplayName(data.uid));
                 }
             });
             const indicator = document.getElementById('chat-typing');
@@ -3514,8 +3576,54 @@
         } catch(e) { console.error(e); }
     }
 
-    document.getElementById('close-chat').addEventListener('click', () => {
+    function openRenameFriendModal() {
+        if (!activePeerId || activeIsGroup) return;
+        document.getElementById('chat-options-menu').classList.add('hidden');
+        const currentCustom = contactsData[activePeerId]?.customName || '';
+        const defaultName = usersData[activePeerId]?.name || '';
+        const input = document.getElementById('rename-contact-input');
+        input.value = currentCustom || defaultName;
+        pushOverlay('rename-contact-modal');
+        setTimeout(() => input.focus(), 100);
+    }
+
+    document.getElementById('btn-edit-contact-name').addEventListener('click', openRenameFriendModal);
+    document.getElementById('btn-rename-friend-menu').addEventListener('click', openRenameFriendModal);
+    document.getElementById('btn-cancel-rename').addEventListener('click', () => history.back());
+    document.getElementById('rename-contact-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'rename-contact-modal') history.back();
+    });
+
+    document.getElementById('btn-save-rename').addEventListener('click', async () => {
+        if (!activePeerId || activeIsGroup) return;
+        const customName = document.getElementById('rename-contact-input').value.trim();
         history.back();
+        try {
+            await updateDoc(doc(privCol('contacts'), activePeerId), {
+                customName: customName
+            });
+            if (contactsData[activePeerId]) {
+                contactsData[activePeerId].customName = customName;
+            }
+            document.getElementById('chat-user-name').innerText = getDisplayName(activePeerId);
+            renderContacts();
+            showToast(customName ? "Friend renamed!" : "Reset to default name");
+        } catch (e) {
+            console.error("Failed to rename friend", e);
+            showToast("Failed to save custom name");
+        }
+    });
+
+    document.getElementById('close-chat').addEventListener('click', () => {
+        if (overlayStack.includes('chat-screen')) {
+            if (window.innerWidth >= 800) {
+                overlayStack = overlayStack.filter(id => id !== 'chat-screen');
+                history.replaceState({ overlays: overlayStack }, '');
+                renderOverlays();
+            } else {
+                history.back();
+            }
+        }
     });
 
     executeAuthPriority();
